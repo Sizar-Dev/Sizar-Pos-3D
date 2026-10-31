@@ -33,4 +33,14 @@ nbproject/
 *.log
 *.tmp
 *.bak
+*.backup_tuning
 *.swp
+backup_config_local/
+*.cache.json
+
+# Local Production Secrets & Credentials
+SizarDev-Pos/config/database.php
+SizarDev-Pos/config/license.json
+SizarDev-Pos/config/.machine_id_cache.json
+SizarDev-Pos/config/.license_cache.json
+SizarDev-Pos/config/.setup_secret.tmp
