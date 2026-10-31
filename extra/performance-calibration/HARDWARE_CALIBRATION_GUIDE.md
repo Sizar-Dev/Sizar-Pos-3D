@@ -103,9 +103,50 @@ $$\text{Allocation Ratio} = \begin{cases}
 
 ---
 
-## 5. Target File Locations Processed by the Script
+## 5. Interactive Operation Modes & Enterprise Menu Control
 
-When executed, the script automatically updates **both** the active installed server instances and the repository configuration template files:
+Rather than modifying live system files blindly, the Calibrator features a full interactive CLI menu that gives the administrator total control over every step:
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│ SELECT AN ACTION:                                                    │
+├──────────────────────────────────────────────────────────────────────┤
+│ [1] Auto-Calibrate Config Files ONLY (Workspace Template Mode)       │
+│     - Updates extra\server-configs\ files based on detected hardware. │
+│     - ZERO impact on live active services or system directories.     │
+│                                                                      │
+│ [2] Manual / Custom Parameter Tuning (Review & Override)             │
+│     - Manually set InnoDB pool size, PHP memory, Apache threads.     │
+│     - Choose whether to save to workspace files or inject to system. │
+│                                                                      │
+│ [3] Full Live System Injection & Service Sync (Requires Admin)       │
+│     - Injects BOM-Free tuned directives into MySQL, PHP, and Apache. │
+│     - Automatically creates backups and restarts active services.    │
+│                                                                      │
+│ [4] Rollback to Previous Configuration Backups                       │
+│     - Restores original .bak / .backup_tuning configuration files.   │
+│                                                                      │
+│ [5] Quick Live Services Health & Port Check                          │
+│                                                                      │
+│ [6] Exit (Do Nothing)                                                │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+### Detailed Breakdown of Options:
+1. **Option [1] — Auto-Calibrate Config Files ONLY:**
+   Applies detected hardware math directly to `extra\server-configs\` templates. Ideal for preparing portable deployments without touching the local Windows host.
+2. **Option [2] — Custom Parameter Tuning:**
+   Allows the engineer to manually override each parameter (`innodb_buffer_pool_size`, `memory_limit`, etc.) with interactive validation, and choose whether to write to repository templates or inject to live services.
+3. **Option [3] — Full Enterprise System Injection:**
+   Creates `.backup_tuning` safety snapshots of live files, writes the parameters with guaranteed BOM-free UTF-8 encoding into `C:\ProgramData\MySQL\...`, `C:\php\php.ini`, and `C:\Apache24\conf\httpd.conf`, and safely restarts/verifies Windows services (`MySQL97` and `Apache2.4`).
+4. **Option [4] — Rollback Safety Net:**
+   Instantly restores original backups and reverts services if any issues arise.
+5. **Option [5] — Live Services Health Check:**
+   Audits service states and verifies TCP listening ports (`3306` for MySQL, `80` for Apache).
+
+---
+
+## 6. Target File Locations Processed by the Script
 
 1. **MySQL / MariaDB Configuration:**
    - Server Template: `../server-configs/my.ini`
@@ -119,16 +160,12 @@ When executed, the script automatically updates **both** the active installed se
 
 ---
 
-## 6. How to Run the Calibrator
+## 7. How to Run the Calibrator
 
-1. Right-click on **`Calibrate_Server_Hardware_Performance.bat`** (located in `extra/performance-calibration/`).
-2. Select **"Run as administrator"**.
-3. The script will:
-   - Probe the PC's hardware capabilities in under 2 seconds.
-   - Display a clear diagnostic terminal report.
-   - Apply the calculated optimal directives to the configuration templates and system instances.
-   - Restart `MySQL97` (or MariaDB) and `Apache2.4` so the new RAM allocations take effect immediately.
-4. Finished! The system operates at peak hardware capability.
+1. Launch **`Calibrate_Server_Hardware_Performance.bat`** (located in `extra/performance-calibration/` or via root `fix_services.bat`).
+2. Accept the Windows UAC elevation prompt if you plan to inject live changes (Option 3).
+3. The engine probes hardware in < 2 seconds and displays your machine's hardware intelligence report.
+4. Select the desired option (1 to 6) from the interactive menu.
 
 ---
 *Certified for Sizar POS Pro Architecture · SizarDev Engineering.*

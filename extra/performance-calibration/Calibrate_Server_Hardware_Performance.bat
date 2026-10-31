@@ -1,27 +1,37 @@
 @echo off
 chcp 65001 >nul
-:: ============================================================================
-:: Sizar POS Pro - Enterprise Hardware Intelligence & Performance Auto-Calibrator
-:: Author: SizarDev | Oran, Algeria
-:: Platform: Native Windows 10 / Windows 11 (Zero External Dependencies)
-:: ============================================================================
 setlocal enabledelayedexpansion
-title Sizar POS Pro - Hardware Performance Auto-Calibrator
+title Sizar POS Pro - Hardware Intelligence & Performance Calibrator
 
-:: Check for Administrative Elevation
+:: Check if already elevated
 net session >nul 2>&1
-if %errorLevel% neq 0 (
-    echo [INFO] Requesting Administrative Elevation for Hardware Calibration...
-    powershell -Command "Start-Process '%~dpnx0' -Verb RunAs"
-    exit /b
+if %errorLevel% equ 0 (
+    goto :RUN_ENGINE
 )
 
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0Calibrate_Server_Hardware_Performance.ps1"
-if %errorLevel% neq 0 (
-    echo.
-    echo [ERROR] Calibration encountered an unexpected error.
-    pause
-    exit /b 1
+:: If parameter 'standard' passed, skip elevation request
+if "%~1"=="standard" (
+    goto :RUN_ENGINE
 )
+
+:: Request Administrative Elevation
+echo ====================================================================
+echo  Sizar POS Pro - Hardware Intelligence & Performance Calibrator
+echo  Developer: SizarDev ^| Oran, Algeria
+echo ====================================================================
+echo.
+echo [INFO] Requesting Administrative Elevation for Full System Access...
+powershell -Command "Start-Process '%~dpnx0' -ArgumentList 'elevated' -Verb RunAs" >nul 2>&1
+if %errorLevel% equ 0 (
+    exit /b 0
+)
+
+echo.
+echo [NOTICE] Elevation was not granted. Proceeding in Standard User Mode...
+echo         (Options 1 and 2-A are available; live system injection requires Admin)
+timeout /t 2 >nul
+
+:RUN_ENGINE
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0Calibrate_Server_Hardware_Performance.ps1"
 
 exit /b 0
