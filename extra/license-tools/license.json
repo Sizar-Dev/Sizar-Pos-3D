@@ -1,0 +1,16 @@
+{
+    "version": 1,
+    "payload": {
+        "allowed_stores": [
+            "*"
+        ],
+        "client_name": "Test Client",
+        "developer": "SizarDev",
+        "expires_at": null,
+        "issued_at": "2026-10-31T07:12:00+01:00",
+        "license_id": "LIC-20261031-32D22EC8",
+        "machine_id": "SizarDev-POS-1234-5678-90AB-CDEF",
+        "plan": "perpetual"
+    },
+    "signature": "XGsHLWBcb9jXgNAkXi6Lcc3ABf30wQrA1HUmQn/+pXslMTP6LSpglxHgr73SIWuoyIMgBK3Pq2hLPaOtLslmsL/PFw/sb0JLa17t0EOVspPEnM6aI/7tVzIa9IauUFq7jDYnexSlrvYHZjjZRKz5lWRYdqClcNM3+FZijRGbyrAJsVoi0E+JUCrYcYv1fF+oAN7z6s5K6ShyswOzb583S8h4PPIQUQd4cdxbpFJ1dyQ5AQs0Xkwj0Ia/DigFJsnw7SFT5+8Zv/tWB4p1jfddGlcZveVZtE8llMsoN7p0r4LZL/65LdtdmZpcd4kV6mVtiwWBMhbvII5hTHu50tH31A=="
+}

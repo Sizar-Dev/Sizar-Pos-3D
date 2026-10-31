@@ -1,0 +1,856 @@
+/* ==========================================================================
+   Sizar Phones — Page-Specific Layouts (Home, Categories, Products, PDP, Services, Cart, Account)
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Home Page Loader & Pinned Scroll Animation
+   -------------------------------------------------------------------------- */
+.hero-loader {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-loader);
+  background-color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  transition: opacity var(--dur-slow) var(--ease-out-expo),
+              visibility var(--dur-slow) var(--ease-out-expo);
+}
+
+.hero-loader.is-done {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.loader-wordmark {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text);
+}
+
+.loader-track {
+  inline-size: 140px;
+  block-size: 2px;
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: var(--radius-pill);
+  overflow: hidden;
+}
+
+.loader-bar {
+  inline-size: 0%;
+  block-size: 100%;
+  background: var(--text);
+  transition: inline-size 120ms linear;
+}
+
+.loader-pct {
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Pinned Scroll Track: 400svh on mobile, 500svh on desktop */
+.hero-scroll-track {
+  position: relative;
+  block-size: 400svh;
+  background-color: var(--bg);
+  margin-block-start: calc(-1 * (var(--nav-height) + var(--nav-top)));
+}
+
+@media (min-width: 768px) {
+  .hero-scroll-track {
+    block-size: 500svh;
+  }
+}
+
+.hero-sticky-stage {
+  position: sticky;
+  inset-block-start: 0;
+  inline-size: 100%;
+  block-size: 100svh;
+  overflow: hidden;
+  background-color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile-first canvas band: centered band at ~108% screen width so the landscape phone
+   stays contained and text sits in the pure black space above/below the band */
+.hero-canvas-band {
+  position: relative;
+  inline-size: 108%;
+  margin-block-start: 2.25rem;
+  max-inline-size: none;
+  aspect-ratio: 16 / 9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: var(--z-base);
+}
+
+@media (min-width: 768px) {
+  .hero-canvas-band {
+    position: absolute;
+    margin-block-start: 0;
+    inset: 0;
+    inline-size: 100%;
+    block-size: 100%;
+    aspect-ratio: auto;
+  }
+}
+
+#hero-canvas {
+  inline-size: 100%;
+  block-size: 100%;
+  display: block;
+}
+
+/* Text Stages Overlay */
+.hero-stages-layer {
+  position: absolute;
+  inset: 0;
+  z-index: var(--z-stage-text);
+  pointer-events: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block-start: calc(var(--nav-height) + var(--nav-top) + var(--space-6));
+  padding-block-end: var(--space-8);
+  padding-inline: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .hero-stages-layer {
+    justify-content: flex-end;
+    padding-block-end: clamp(3rem, 6svh, 5rem);
+  }
+}
+
+.hero-stage {
+  position: absolute;
+  inset-inline: var(--space-4);
+  inset-block-start: calc(var(--nav-height) + var(--nav-top) + var(--space-5));
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-3);
+  padding-inline: var(--space-5);
+  border-radius: var(--radius-card-lg);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72) 0%, rgba(0, 0, 0, 0) 78%);
+  opacity: 0;
+  transform: translate3d(0, 18px, 0);
+  filter: blur(8px);
+  will-change: opacity, transform, filter;
+}
+
+/* On mobile portrait, stage 0 & 2 sit in the top black band above the phone,
+   and stage 1 & 3 sit in the bottom black band below the phone so text never covers the phone */
+.hero-stage[data-stage="1"],
+.hero-stage[data-stage="3"] {
+  inset-block-start: auto;
+  inset-block-end: var(--space-8);
+}
+
+@media (min-width: 768px) {
+  .hero-stage,
+  .hero-stage[data-stage="1"],
+  .hero-stage[data-stage="3"] {
+    inset-block-start: auto;
+    inset-block-end: clamp(2.5rem, 6svh, 5rem);
+    inset-inline: var(--space-6);
+  }
+  .hero-stage[data-stage="0"] {
+    inset-block-start: calc(var(--nav-height) + var(--nav-top) + clamp(1rem, 3svh, 2.5rem));
+    inset-block-end: auto;
+  }
+}
+
+.hero-stage-title {
+  font-size: var(--text-display);
+  font-weight: 600;
+  letter-spacing: var(--tracking-tight);
+  line-height: var(--leading-tight);
+  color: var(--text);
+  max-inline-size: 18ch;
+  text-shadow: 0 6px 28px rgba(0, 0, 0, 0.95);
+}
+
+.hero-stage-sub {
+  font-size: var(--text-lg);
+  color: var(--text-3);
+  max-inline-size: 44ch;
+  text-shadow: 0 4px 18px rgba(0, 0, 0, 0.95);
+}
+
+.hero-scroll-hint {
+  margin-block-start: var(--space-3);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
+
+.scroll-chevron {
+  display: inline-block;
+  animation: subtle-float 2.4s var(--ease-out-quart) infinite;
+}
+
+@keyframes subtle-float {
+  0%, 100% { transform: translateY(0); opacity: 0.6; }
+  50% { transform: translateY(4px); opacity: 1; }
+}
+
+/* Reduced Motion Static Composition */
+.hero-reduced-motion {
+  display: none;
+  padding-block: calc(var(--nav-height) + var(--space-12)) var(--space-12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-scroll-track {
+    block-size: auto !important;
+    margin-block-start: 0;
+  }
+  .hero-sticky-stage,
+  .hero-loader {
+    display: none !important;
+  }
+  .hero-reduced-motion {
+    display: block;
+  }
+  .scroll-chevron {
+    animation: none;
+  }
+}
+
+.reduced-motion-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  margin-block-start: var(--space-8);
+}
+
+@media (min-width: 768px) {
+  .reduced-motion-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.reduced-motion-card {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.reduced-motion-card img {
+  inline-size: 100%;
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+
+/* Home Closing Block (After Pin Releases) */
+.hero-closing {
+  padding-block: var(--space-24);
+  text-align: center;
+  background-color: var(--bg);
+}
+
+.hero-closing-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.hero-closing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  margin-block-start: var(--space-2);
+}
+
+/* --------------------------------------------------------------------------
+   2. Shared Inner Page Header
+   -------------------------------------------------------------------------- */
+.page-header {
+  padding-block: var(--space-12) var(--space-8);
+  text-align: start;
+}
+
+.page-header-centered {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.page-section {
+  padding-block-end: var(--space-20);
+}
+
+/* --------------------------------------------------------------------------
+   3. Categories Page (categories.html)
+   -------------------------------------------------------------------------- */
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 310px), 1fr));
+  gap: var(--space-6);
+}
+
+.category-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-8);
+  min-block-size: 280px;
+  position: relative;
+  text-align: start;
+}
+
+.category-card-art {
+  inline-size: 64px;
+  block-size: 64px;
+  border-radius: 18px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  margin-block-end: var(--space-8);
+}
+
+.category-card-meta {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.category-card-title {
+  font-size: var(--text-xl);
+  font-weight: 600;
+  margin-block-end: var(--space-1);
+}
+
+.category-card-count {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+}
+
+.category-card-arrow {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid var(--hairline);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text);
+  transition: background-color var(--dur-fast) var(--ease-out-quart),
+              transform var(--dur-fast) var(--ease-out-quart);
+}
+
+.category-card:hover .category-card-arrow {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   4. Products Catalog Page (products.html)
+   -------------------------------------------------------------------------- */
+.catalog-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-block-end: var(--space-8);
+  padding-block-end: var(--space-6);
+  border-block-end: 1px solid var(--hairline);
+}
+
+@media (min-width: 900px) {
+  .catalog-toolbar {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.sort-control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  align-self: flex-start;
+}
+
+@media (min-width: 900px) {
+  .sort-control {
+    align-self: center;
+  }
+}
+
+.sort-label {
+  font-size: var(--text-sm);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.sort-select {
+  min-block-size: 44px;
+  padding-inline-start: var(--space-4);
+  padding-inline-end: var(--space-8);
+  border-radius: var(--radius-pill);
+  background-color: var(--surface);
+  border: 1px solid var(--hairline);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr));
+  gap: var(--space-6);
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-5);
+  gap: var(--space-4);
+}
+
+.product-card-link {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: start;
+}
+
+.product-tile-visual {
+  aspect-ratio: 1 / 1;
+  inline-size: 100%;
+  border-radius: 18px;
+  background: radial-gradient(circle at 50% 35%, #252529 0%, #141416 70%, #0d0d0f 100%);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.product-tile-visual img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+  transition: transform var(--dur-slow) var(--ease-out-expo);
+}
+
+.product-card:hover .product-tile-visual img {
+  transform: scale(1.03);
+}
+
+.product-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.product-card-category {
+  font-size: var(--text-xs);
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.product-card-title {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.25;
+}
+
+.product-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding-block-start: var(--space-2);
+  border-block-start: 1px solid var(--hairline);
+}
+
+.product-card-price {
+  font-size: var(--text-base);
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   5. Product Detail Page (product.html)
+   -------------------------------------------------------------------------- */
+.pdp-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-10);
+  padding-block: var(--space-8) var(--space-16);
+}
+
+@media (min-width: 900px) {
+  .pdp-layout {
+    grid-template-columns: 1.08fr 0.92fr;
+    align-items: start;
+    gap: var(--space-12);
+  }
+}
+
+.pdp-gallery-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+@media (min-width: 900px) {
+  .pdp-gallery-wrap {
+    position: sticky;
+    inset-block-start: calc(var(--nav-height) + var(--nav-top) + var(--space-6));
+  }
+}
+
+.pdp-gallery-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  border-radius: var(--radius-card-lg);
+  border: 1px solid var(--hairline);
+  background: radial-gradient(circle at 50% 38%, #232329 0%, #121215 55%, #09090b 100%);
+}
+
+.pdp-gallery-track::-webkit-scrollbar {
+  display: none;
+}
+
+.pdp-slide {
+  flex: 0 0 100%;
+  aspect-ratio: 4 / 3;
+  scroll-snap-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: var(--space-4);
+}
+
+.pdp-slide img {
+  inline-size: 100%;
+  block-size: 100%;
+  object-fit: contain;
+}
+
+.pdp-gallery-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+}
+
+.gallery-dot {
+  inline-size: 44px;
+  block-size: 44px;
+  border-radius: var(--radius-pill);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gallery-dot::before {
+  content: "";
+  inline-size: 8px;
+  block-size: 8px;
+  border-radius: var(--radius-pill);
+  background: rgba(255, 255, 255, 0.24);
+  transition: inline-size var(--dur-base) var(--ease-out-expo),
+              background-color var(--dur-base) var(--ease-out-expo);
+}
+
+.gallery-dot[aria-selected="true"]::before {
+  inline-size: 24px;
+  background: var(--text);
+}
+
+.pdp-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  text-align: start;
+}
+
+.pdp-price {
+  font-size: var(--text-2xl);
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+.pdp-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pdp-option-label {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  color: var(--text-2);
+}
+
+.pdp-purchase-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  padding-block-start: var(--space-2);
+}
+
+.pdp-specs-list {
+  border-block-start: 1px solid var(--hairline);
+  margin-block-start: var(--space-4);
+}
+
+.pdp-spec-row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block: var(--space-3);
+  border-block-end: 1px solid var(--hairline);
+  font-size: var(--text-sm);
+}
+
+.pdp-spec-key {
+  color: var(--text-2);
+}
+
+.pdp-spec-val {
+  color: var(--text);
+  font-weight: 500;
+  text-align: end;
+}
+
+/* --------------------------------------------------------------------------
+   6. Repair Services Page (services.html)
+   -------------------------------------------------------------------------- */
+.services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: var(--space-6);
+}
+
+.service-card {
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--space-6);
+  text-align: start;
+}
+
+.service-icon-box {
+  inline-size: 52px;
+  block-size: 52px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--hairline);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--link);
+}
+
+.service-card-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-block-start: var(--space-5);
+  border-block-start: 1px solid var(--hairline);
+}
+
+.service-price-tag {
+  display: flex;
+  flex-direction: column;
+}
+
+.service-price-from {
+  font-size: var(--text-xs);
+  color: var(--text-2);
+}
+
+.service-price-val {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --------------------------------------------------------------------------
+   7. Full Cart Page (cart.html)
+   -------------------------------------------------------------------------- */
+.cart-page-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-8);
+  padding-block-end: var(--space-20);
+}
+
+@media (min-width: 900px) {
+  .cart-page-grid {
+    grid-template-columns: 1.45fr 0.85fr;
+    align-items: start;
+  }
+}
+
+.cart-summary-card {
+  padding: var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.cart-page-list {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   8. Account / Sign In Page (account.html)
+   -------------------------------------------------------------------------- */
+.auth-section {
+  min-block-size: calc(100svh - var(--nav-height) - 140px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-block: var(--space-12);
+}
+
+.auth-card {
+  inline-size: min(100%, 440px);
+  padding: clamp(1.75rem, 4vw, 2.75rem);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  text-align: center;
+}
+
+.oauth-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Official Apple & Google Sign-in Button Styling Guidelines */
+.btn-oauth-apple {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ffffff;
+  font-weight: 600;
+}
+
+.btn-oauth-apple:hover {
+  background-color: #f0f0f2;
+}
+
+.btn-oauth-google {
+  background-color: #131314;
+  color: #e3e3e3;
+  border: 1px solid #8e918f;
+  font-weight: 500;
+}
+
+.btn-oauth-google:hover {
+  background-color: #1f1f22;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text-2);
+  font-size: var(--text-xs);
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  flex: 1;
+  block-size: 1px;
+  background: var(--hairline);
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  text-align: start;
+}
+
+.input-field-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.input-label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.text-input {
+  inline-size: 100%;
+  min-block-size: 48px;
+  padding-inline: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  border: 1px solid var(--hairline-strong);
+  color: var(--text);
+  font-size: var(--text-base);
+  transition: border-color var(--dur-fast) var(--ease-out-quart);
+}
+
+.text-input::placeholder {
+  color: var(--text-2);
+}
+
+.text-input:focus {
+  outline: none;
+  border-color: var(--link);
+  box-shadow: 0 0 0 3px rgba(41, 151, 255, 0.25);
+}

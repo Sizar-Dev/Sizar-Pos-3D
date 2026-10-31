@@ -1,0 +1,36 @@
+# ==============================================================================
+# Sizar POS Pro & 3D Spatial Twin - Official Repository Ignore Matrix
+# Thirduni Hackathon 2026 • Algiers
+# ==============================================================================
+
+# Internal Archives & Workspace Scaffolding
+_archive_removed
+_archive_removed/
+_archive_removed/*
+.agents
+.agents/
+.agents/*
+
+# Unencrypted RSA Private Keys (Prevent GitHub Secret Scanning Triggers)
+*.pem
+
+# Operating System Files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+._*
+
+# IDE & Text Editor Artifacts
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+nbproject/
+
+# Logs & Temporary Scratch Files
+*.log
+*.tmp
+*.bak
+*.swp
