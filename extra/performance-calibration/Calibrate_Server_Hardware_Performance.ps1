@@ -104,7 +104,9 @@ Write-Host " [AIR-GAP GUARANTEE] All Security Directives Remain 100% Locked:" -F
 Write-Host "   - disable_functions, expose_php, session.*, and local_infile=0 ARE NEVER TOUCHED." -ForegroundColor Magenta
 Write-Host ""
 
-# Helper function: Safe regex token updater
+# Helper function: Safe regex token updater (Strictly NO UTF-8 BOM, required for MySQL/Apache/PHP parser compatibility)
+$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+
 function Update-ConfigFileDirective {
     param(
         [string]$FilePath,
@@ -112,9 +114,10 @@ function Update-ConfigFileDirective {
         [string]$Replacement
     )
     if (Test-Path $FilePath) {
-        $content = [System.IO.File]::ReadAllText($FilePath, [System.Text.Encoding]::UTF8)
+        $utf8Encoding = New-Object System.Text.UTF8Encoding($false)
+        $content = [System.IO.File]::ReadAllText($FilePath)
         $newContent = [regex]::Replace($content, $Pattern, $Replacement, [System.Text.RegularExpressions.RegexOptions]::Multiline)
-        [System.IO.File]::WriteAllText($FilePath, $newContent, [System.Text.Encoding]::UTF8)
+        [System.IO.File]::WriteAllText($FilePath, $newContent, $utf8Encoding)
         return $true
     }
     return $false
@@ -192,24 +195,44 @@ foreach ($target in $httpdTargets | Select-Object -Unique) {
 
 Write-Host ""
 # 4. Restart Services if Active on this PC
-Write-Host "[4/4] Synchronizing Windows Services..." -ForegroundColor Yellow
+Write-Host "[4/4] Synchronizing and Verifying Windows Services..." -ForegroundColor Yellow
 
 $mysqlService = Get-Service -Name "MySQL97", "MySQL84", "MySQL80", "MySQL", "MariaDB" -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($mysqlService -and $mysqlService.Status -eq "Running") {
-    Write-Host "   - Restarting $($mysqlService.Name) to allocate $poolSizeStr InnoDB buffer..." -ForegroundColor Cyan
-    Restart-Service -Name $mysqlService.Name -Force -ErrorAction SilentlyContinue
-    Write-Host "   [SUCCESS] $($mysqlService.Name) is running with new high-throughput buffers." -ForegroundColor Green
+if ($mysqlService) {
+    Write-Host "   - Configuring and launching $($mysqlService.Name)..." -ForegroundColor Cyan
+    try {
+        if ($mysqlService.Status -eq "Running") {
+            Stop-Service -Name $mysqlService.Name -Force -ErrorAction Stop
+            Start-Sleep -Seconds 2
+        }
+        Start-Service -Name $mysqlService.Name -ErrorAction Stop
+        $mysqlService.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Running, [TimeSpan]::FromSeconds(15))
+        Write-Host "   [SUCCESS] $($mysqlService.Name) is active and RUNNING with $poolSizeStr InnoDB buffer." -ForegroundColor Green
+    } catch {
+        Write-Host "   [ERROR] Failed to start $($mysqlService.Name): $($_.Exception.Message)" -ForegroundColor Red
+        Write-Host "           Attempting safe recovery..." -ForegroundColor Yellow
+        Start-Process net -ArgumentList "start `"$($mysqlService.Name)`"" -Wait -NoNewWindow
+    }
 } else {
-    Write-Host "   [INFO] MySQL service is not installed on this PC or currently stopped." -ForegroundColor Gray
+    Write-Host "   [INFO] MySQL service is not installed on this PC." -ForegroundColor Gray
 }
 
 $apacheService = Get-Service -Name "Apache2.4", "SizarPOS_Engine" -ErrorAction SilentlyContinue | Select-Object -First 1
-if ($apacheService -and $apacheService.Status -eq "Running") {
-    Write-Host "   - Restarting $($apacheService.Name) to apply worker threads..." -ForegroundColor Cyan
-    Restart-Service -Name $apacheService.Name -Force -ErrorAction SilentlyContinue
-    Write-Host "   [SUCCESS] $($apacheService.Name) restarted with $apacheThreads worker threads." -ForegroundColor Green
+if ($apacheService) {
+    Write-Host "   - Configuring and launching $($apacheService.Name)..." -ForegroundColor Cyan
+    try {
+        if ($apacheService.Status -eq "Running") {
+            Restart-Service -Name $apacheService.Name -Force -ErrorAction Stop
+        } else {
+            Start-Service -Name $apacheService.Name -ErrorAction Stop
+        }
+        $apacheService.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Running, [TimeSpan]::FromSeconds(10))
+        Write-Host "   [SUCCESS] $($apacheService.Name) is active and RUNNING with $apacheThreads worker threads." -ForegroundColor Green
+    } catch {
+        Write-Host "   [ERROR] Failed to start $($apacheService.Name): $($_.Exception.Message)" -ForegroundColor Red
+    }
 } else {
-    Write-Host "   [INFO] Apache service is not installed on this PC or currently stopped." -ForegroundColor Gray
+    Write-Host "   [INFO] Apache service is not installed on this PC." -ForegroundColor Gray
 }
 
 Write-Host ""

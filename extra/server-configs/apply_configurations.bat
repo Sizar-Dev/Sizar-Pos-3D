@@ -49,14 +49,19 @@ if "!MY_COPIED!"=="0" (
 )
 
 echo.
-echo [4/4] Restarting Windows Services to apply new tuning...
+echo [4/4] Restarting and Verifying Windows Services...
 for %%S in (Apache2.4 SizarPOS_Engine) do (
     sc query "%%S" >nul 2>&1
     if !errorLevel! equ 0 (
         echo    - Restarting %%S...
         net stop "%%S" >nul 2>&1
         net start "%%S" >nul 2>&1
-        echo    - %%S is running with new parameters.
+        sc query "%%S" | findstr /I "RUNNING" >nul
+        if !errorLevel! equ 0 (
+            echo    [SUCCESS] %%S is ACTIVE and RUNNING.
+        ) else (
+            echo    [WARNING] %%S is not in RUNNING state. Check Apache logs.
+        )
     )
 )
 
@@ -66,7 +71,12 @@ for %%S in (MySQL97 MySQL84 MySQL80 MySQL MariaDB) do (
         echo    - Restarting %%S...
         net stop "%%S" >nul 2>&1
         net start "%%S" >nul 2>&1
-        echo    - %%S is running with new parameters.
+        sc query "%%S" | findstr /I "RUNNING" >nul
+        if !errorLevel! equ 0 (
+            echo    [SUCCESS] %%S is ACTIVE and RUNNING.
+        ) else (
+            echo    [WARNING] %%S is not in RUNNING state. Check MySQL error log.
+        )
     )
 )
 
