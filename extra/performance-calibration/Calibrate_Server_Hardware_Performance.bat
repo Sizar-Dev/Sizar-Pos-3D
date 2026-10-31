@@ -1,7 +1,7 @@
 @echo off
 chcp 65001 >nul
 setlocal enabledelayedexpansion
-title Sizar POS Pro - Hardware Intelligence & Performance Calibrator
+title Sizar POS Pro - Hardware Intelligence and Performance Calibrator
 
 :: Check if already elevated
 net session >nul 2>&1
@@ -16,7 +16,7 @@ if "%~1"=="standard" (
 
 :: Request Administrative Elevation
 echo ====================================================================
-echo  Sizar POS Pro - Hardware Intelligence & Performance Calibrator
+echo  Sizar POS Pro - Hardware Intelligence and Performance Calibrator
 echo  Developer: SizarDev ^| Oran, Algeria
 echo ====================================================================
 echo.

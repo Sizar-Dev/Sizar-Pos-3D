@@ -1,12 +1,11 @@
 # ============================================================================
-# SIZAR POS PRO — ENTERPRISE HARDWARE INTELLIGENCE & PERFORMANCE CALIBRATOR
+# SIZAR POS PRO -- ENTERPRISE HARDWARE INTELLIGENCE AND PERFORMANCE CALIBRATOR
 # Author: SizarDev | Oran, Algeria
 # Platform: Native Windows 10 / Windows 11 (Zero External Dependencies)
-# Encoding Guarantee: Strict UTF-8 WITHOUT BOM (100% MySQL/Apache/PHP Safe)
+# Encoding: Pure 7-Bit Clean ASCII (100% Compatible with PowerShell 5.1 and 7)
 # ============================================================================
 
-$Host.UI.RawUI.WindowTitle = "Sizar POS Pro - Hardware Intelligence & Performance Calibrator"
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
+$Host.UI.RawUI.WindowTitle = "Sizar POS Pro - Hardware Intelligence and Performance Calibrator"
 
 function Test-IsAdmin {
     $identity = [Security.Principal.WindowsIdentity]::GetCurrent()
@@ -17,10 +16,10 @@ function Test-IsAdmin {
 function Show-Header {
     param([bool]$isAdmin)
     Clear-Host
-    Write-Host "╔══════════════════════════════════════════════════════════════════════╗" -ForegroundColor Cyan
-    Write-Host "║       SIZAR POS PRO — HARDWARE INTELLIGENCE & AUTO-CALIBRATOR        ║" -ForegroundColor Cyan
-    Write-Host "║       Enterprise Server Performance Engine | Developer: SizarDev     ║" -ForegroundColor Cyan
-    Write-Host "╚══════════════════════════════════════════════════════════════════════╝" -ForegroundColor Cyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor Cyan
+    Write-Host "|       SIZAR POS PRO -- HARDWARE INTELLIGENCE AND AUTO-CALIBRATOR      |" -ForegroundColor Cyan
+    Write-Host "|       Enterprise Server Performance Engine | Developer: SizarDev     |" -ForegroundColor Cyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor Cyan
     if ($isAdmin) {
         Write-Host " [SECURITY PRIVILEGE]: " -NoNewline -ForegroundColor DarkGray
         Write-Host "ELEVATED ADMINISTRATOR (Full System Injection Allowed)" -ForegroundColor Green
@@ -32,10 +31,10 @@ function Show-Header {
 }
 
 # ----------------------------------------------------------------------------
-# 1. HARDWARE DETECTION & INTELLIGENCE
+# 1. HARDWARE DETECTION AND INTELLIGENCE
 # ----------------------------------------------------------------------------
 function Get-HardwareIntelligence {
-    Write-Host "[1/2] Probing Hardware Capabilities & Architecture..." -ForegroundColor Yellow
+    Write-Host "[1/2] Probing Hardware Capabilities and Architecture..." -ForegroundColor Yellow
     
     # Physical Memory
     $ramBytes = (Get-CimInstance Win32_ComputerSystem).TotalPhysicalMemory
@@ -162,38 +161,41 @@ function Get-OptimalParameters {
 function Show-IntelligenceReport {
     param($hw, $params)
     
-    Write-Host "┌──────────────────────────────────────────────────────────────────────┐" -ForegroundColor DarkCyan
-    Write-Host "│ DETECTED HARDWARE SPECIFICATIONS                                     │" -ForegroundColor Cyan
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkCyan
-    Write-Host ("│  • Processor:       {0,-48} │" -f ($hw.CpuName.Substring(0, [math]::Min(48, $hw.CpuName.Length)))) -ForegroundColor White
-    Write-Host ("│  • Compute Cores:   {0} Physical Cores / {1} Logical Threads{2,-18} │" -f $hw.Cores, $hw.Threads, "") -ForegroundColor White
-    Write-Host ("│  • System Memory:   {0} GB Total Physical RAM ({1} GB Currently Free){2,-9} │" -f $hw.RamTotalGB, $hw.RamFreeGB, "") -ForegroundColor White
-    Write-Host ("│  • Storage Media:   {0,-48} │" -f "$($hw.DiskDesc)") -ForegroundColor White
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkCyan
-    Write-Host "│ LIVE WINDOWS SERVICES STATUS                                         │" -ForegroundColor Cyan
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkCyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
+    Write-Host "| DETECTED HARDWARE SPECIFICATIONS                                     |" -ForegroundColor Cyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
+    Write-Host ("|  * Processor:       {0,-48} |" -f ($hw.CpuName.Substring(0, [math]::Min(48, $hw.CpuName.Length)))) -ForegroundColor White
+    Write-Host ("|  * Compute Cores:   {0} Physical Cores / {1} Logical Threads{2,-18} |" -f $hw.Cores, $hw.Threads, "") -ForegroundColor White
+    Write-Host ("|  * System Memory:   {0} GB Total Physical RAM ({1} GB Currently Free){2,-9} |" -f $hw.RamTotalGB, $hw.RamFreeGB, "") -ForegroundColor White
+    Write-Host ("|  * Storage Media:   {0,-48} |" -f "$($hw.DiskDesc)") -ForegroundColor White
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
+    Write-Host "| LIVE WINDOWS SERVICES STATUS                                         |" -ForegroundColor Cyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
     
     $mysqlText = if ($hw.MySQLService) { "$($hw.MySQLService.Name) [Status: $($hw.MySQLService.Status)]" } else { "Not Detected / Not Installed" }
     $apacheText = if ($hw.ApacheService) { "$($hw.ApacheService.Name) [Status: $($hw.ApacheService.Status)]" } else { "Not Detected / Not Installed" }
     
-    Write-Host ("│  • MySQL Service:   {0,-48} │" -f $mysqlText) -ForegroundColor $(if ($hw.MySQLService -and $hw.MySQLService.Status -eq "Running") { "Green" } else { "Yellow" })
-    Write-Host ("│  • Apache Service:  {0,-48} │" -f $apacheText) -ForegroundColor $(if ($hw.ApacheService -and $hw.ApacheService.Status -eq "Running") { "Green" } else { "Yellow" })
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkCyan
-    Write-Host "│ HARDWARE INTELLIGENCE RECOMMENDED TUNING                             │" -ForegroundColor Cyan
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor DarkCyan
-    Write-Host ("│  [my.ini]    innodb_buffer_pool_size      = {0,-26} │" -f $params.innodb_buffer_pool_size) -ForegroundColor Green
-    Write-Host ("│  [my.ini]    innodb_buffer_pool_instances = {0,-26} │" -f $params.innodb_buffer_pool_instances) -ForegroundColor Green
-    Write-Host ("│  [my.ini]    innodb_redo_log_capacity     = {0,-26} │" -f $params.innodb_redo_log_capacity) -ForegroundColor Green
-    Write-Host ("│  [my.ini]    innodb_io_capacity           = {0,-26} │" -f "$($params.innodb_io_capacity) (Max: $($params.innodb_io_capacity_max))") -ForegroundColor Green
-    Write-Host ("│  [my.ini]    innodb_flush_neighbors       = {0,-26} │" -f "$($params.innodb_flush_neighbors) (0=SSD wear protect, 1=HDD)") -ForegroundColor Green
-    Write-Host ("│  [php.ini]   memory_limit                 = {0,-26} │" -f $params.memory_limit) -ForegroundColor Green
-    Write-Host ("│  [httpd.conf]ThreadsPerChild              = {0,-26} │" -f $params.ThreadsPerChild) -ForegroundColor Green
-    Write-Host "└──────────────────────────────────────────────────────────────────────┘" -ForegroundColor DarkCyan
+    $mysqlColor = if ($hw.MySQLService -and $hw.MySQLService.Status -eq "Running") { "Green" } else { "Yellow" }
+    $apacheColor = if ($hw.ApacheService -and $hw.ApacheService.Status -eq "Running") { "Green" } else { "Yellow" }
+
+    Write-Host ("|  * MySQL Service:   {0,-48} |" -f $mysqlText) -ForegroundColor $mysqlColor
+    Write-Host ("|  * Apache Service:  {0,-48} |" -f $apacheText) -ForegroundColor $apacheColor
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
+    Write-Host "| HARDWARE INTELLIGENCE RECOMMENDED TUNING                             |" -ForegroundColor Cyan
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
+    Write-Host ("|  [my.ini]    innodb_buffer_pool_size      = {0,-26} |" -f $params.innodb_buffer_pool_size) -ForegroundColor Green
+    Write-Host ("|  [my.ini]    innodb_buffer_pool_instances = {0,-26} |" -f $params.innodb_buffer_pool_instances) -ForegroundColor Green
+    Write-Host ("|  [my.ini]    innodb_redo_log_capacity     = {0,-26} |" -f $params.innodb_redo_log_capacity) -ForegroundColor Green
+    Write-Host ("|  [my.ini]    innodb_io_capacity           = {0,-26} |" -f "$($params.innodb_io_capacity) (Max: $($params.innodb_io_capacity_max))") -ForegroundColor Green
+    Write-Host ("|  [my.ini]    innodb_flush_neighbors       = {0,-26} |" -f "$($params.innodb_flush_neighbors) (0=SSD wear protect, 1=HDD)") -ForegroundColor Green
+    Write-Host ("|  [php.ini]   memory_limit                 = {0,-26} |" -f $params.memory_limit) -ForegroundColor Green
+    Write-Host ("|  [httpd.conf]ThreadsPerChild              = {0,-26} |" -f $params.ThreadsPerChild) -ForegroundColor Green
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor DarkCyan
     Write-Host ""
 }
 
 # ----------------------------------------------------------------------------
-# 4. CONFIGURATION ENGINE (BOM-FREE GUARANTEE)
+# 4. CONFIGURATION ENGINE (STRICT BOM-FREE UTF-8)
 # ----------------------------------------------------------------------------
 function Update-ConfigDirective {
     param(
@@ -234,7 +236,7 @@ function Apply-TuningParameters {
             [void](Update-ConfigDirective $target "^\s*innodb_io_capacity\s*=.*$" "innodb_io_capacity=$($Params.innodb_io_capacity)")
             [void](Update-ConfigDirective $target "^\s*innodb_io_capacity_max\s*=.*$" "innodb_io_capacity_max=$($Params.innodb_io_capacity_max)")
             [void](Update-ConfigDirective $target "^\s*innodb_flush_neighbors\s*=.*$" "innodb_flush_neighbors=$($Params.innodb_flush_neighbors)")
-            Write-Host "   ✔ Tuned [my.ini] (BOM-Free UTF-8): $target" -ForegroundColor Green
+            Write-Host "   [OK] Tuned [my.ini] (BOM-Free): $($target)" -ForegroundColor Green
             $appliedCount++
         }
     }
@@ -246,7 +248,7 @@ function Apply-TuningParameters {
                 Copy-Item $target "$target.backup_tuning" -Force -ErrorAction SilentlyContinue
             }
             [void](Update-ConfigDirective $target "^\s*memory_limit\s*=.*$" "memory_limit = $($Params.memory_limit)")
-            Write-Host "   ✔ Tuned [php.ini] (BOM-Free UTF-8): $target" -ForegroundColor Green
+            Write-Host "   [OK] Tuned [php.ini] (BOM-Free): $($target)" -ForegroundColor Green
             $appliedCount++
         }
     }
@@ -258,7 +260,7 @@ function Apply-TuningParameters {
                 Copy-Item $target "$target.backup_tuning" -Force -ErrorAction SilentlyContinue
             }
             [void](Update-ConfigDirective $target "^\s*ThreadsPerChild\s+.*$" "    ThreadsPerChild $($Params.ThreadsPerChild)")
-            Write-Host "   ✔ Tuned [httpd.conf] (BOM-Free UTF-8): $target" -ForegroundColor Green
+            Write-Host "   [OK] Tuned [httpd.conf] (BOM-Free): $($target)" -ForegroundColor Green
             $appliedCount++
         }
     }
@@ -267,13 +269,13 @@ function Apply-TuningParameters {
 }
 
 # ----------------------------------------------------------------------------
-# 5. SERVICE RECOVERY & SYNCHRONIZATION
+# 5. SERVICE RECOVERY AND SYNCHRONIZATION
 # ----------------------------------------------------------------------------
 function Sync-WindowsServices {
     param($poolSize, $apacheThreads)
     
     Write-Host ""
-    Write-Host "--- SYNCHRONIZING & VERIFYING WINDOWS SERVICES ---" -ForegroundColor Yellow
+    Write-Host "--- SYNCHRONIZING AND VERIFYING WINDOWS SERVICES ---" -ForegroundColor Yellow
 
     # MySQL
     $mysql = Get-Service -Name "MySQL97", "MySQL84", "MySQL80", "MySQL", "MariaDB" -ErrorAction SilentlyContinue | Select-Object -First 1
@@ -288,9 +290,9 @@ function Sync-WindowsServices {
             Write-Host "   Starting $($mysql.Name) with high-throughput allocation..." -ForegroundColor DarkGray
             Start-Service -Name $mysql.Name -ErrorAction Stop
             $mysql.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Running, [TimeSpan]::FromSeconds(15))
-            Write-Host "   ✔ [SUCCESS] $($mysql.Name) is active and RUNNING ($poolSize InnoDB Buffer Pool)." -ForegroundColor Green
+            Write-Host "   [SUCCESS] $($mysql.Name) is active and RUNNING ($poolSize InnoDB Buffer Pool)." -ForegroundColor Green
         } catch {
-            Write-Host "   ✖ [ERROR] Failed to start $($mysql.Name): $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "   [ERROR] Failed to start $($mysql.Name): $($_.Exception.Message)" -ForegroundColor Red
         }
     } else {
         Write-Host "   [INFO] No active MySQL service installed." -ForegroundColor DarkGray
@@ -307,9 +309,9 @@ function Sync-WindowsServices {
                 Start-Service -Name $apache.Name -ErrorAction Stop
             }
             $apache.WaitForStatus([System.ServiceProcess.ServiceControllerStatus]::Running, [TimeSpan]::FromSeconds(10))
-            Write-Host "   ✔ [SUCCESS] $($apache.Name) is active and RUNNING ($apacheThreads worker threads)." -ForegroundColor Green
+            Write-Host "   [SUCCESS] $($apache.Name) is active and RUNNING ($apacheThreads worker threads)." -ForegroundColor Green
         } catch {
-            Write-Host "   ✖ [ERROR] Failed to start $($apache.Name): $($_.Exception.Message)" -ForegroundColor Red
+            Write-Host "   [ERROR] Failed to start $($apache.Name): $($_.Exception.Message)" -ForegroundColor Red
         }
     } else {
         Write-Host "   [INFO] No active Apache service installed." -ForegroundColor DarkGray
@@ -339,10 +341,10 @@ function Restore-ConfigurationBackups {
         if (Test-Path $backup) {
             try {
                 Copy-Item $backup $target -Force
-                Write-Host "   ✔ Restored: $($target) from backup" -ForegroundColor Green
+                Write-Host "   [RESTORED] $($target) from backup" -ForegroundColor Green
                 $restoredCount++
             } catch {
-                Write-Host "   ✖ Failed to restore $($target): $($_.Exception.Message)" -ForegroundColor Red
+                Write-Host "   [ERROR] Failed to restore $($target): $($_.Exception.Message)" -ForegroundColor Red
             }
         }
     }
@@ -387,28 +389,28 @@ $systemHttpd = @("C:\Apache24\conf\httpd.conf", "C:\ProgramData\PosEngine\server
 $running = $true
 
 while ($running) {
-    Write-Host "┌──────────────────────────────────────────────────────────────────────┐" -ForegroundColor White
-    Write-Host "│ SELECT AN ACTION:                                                    │" -ForegroundColor White
-    Write-Host "├──────────────────────────────────────────────────────────────────────┤" -ForegroundColor White
-    Write-Host "│ [1] Auto-Calibrate Config Files ONLY (Workspace Template Mode)       │" -ForegroundColor Cyan
-    Write-Host "│     - Updates extra\server-configs\ files based on detected hardware. │" -ForegroundColor Gray
-    Write-Host "│     - ZERO impact on live active services or system directories.     │" -ForegroundColor Gray
-    Write-Host "│                                                                      │" -ForegroundColor White
-    Write-Host "│ [2] Manual / Custom Parameter Tuning (Review & Override)             │" -ForegroundColor Yellow
-    Write-Host "│     - Manually set InnoDB pool size, PHP memory, Apache threads.     │" -ForegroundColor Gray
-    Write-Host "│     - Choose whether to save to workspace files or inject to system. │" -ForegroundColor Gray
-    Write-Host "│                                                                      │" -ForegroundColor White
-    Write-Host "│ [3] Full Live System Injection & Service Sync (Requires Admin)       │" -ForegroundColor Green
-    Write-Host "│     - Injects BOM-Free tuned directives into MySQL, PHP, and Apache. │" -ForegroundColor Gray
-    Write-Host "│     - Automatically creates backups and restarts active services.    │" -ForegroundColor Gray
-    Write-Host "│                                                                      │" -ForegroundColor White
-    Write-Host "│ [4] Rollback to Previous Configuration Backups                       │" -ForegroundColor Magenta
-    Write-Host "│     - Restores original .bak / .backup_tuning configuration files.   │" -ForegroundColor Gray
-    Write-Host "│                                                                      │" -ForegroundColor White
-    Write-Host "│ [5] Quick Live Services Health & Port Check                          │" -ForegroundColor Cyan
-    Write-Host "│                                                                      │" -ForegroundColor White
-    Write-Host "│ [6] Exit (Do Nothing)                                                │" -ForegroundColor Red
-    Write-Host "└──────────────────────────────────────────────────────────────────────┘" -ForegroundColor White
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor White
+    Write-Host "| SELECT AN ACTION:                                                    |" -ForegroundColor White
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor White
+    Write-Host "| [1] Auto-Calibrate Config Files ONLY (Workspace Template Mode)       |" -ForegroundColor Cyan
+    Write-Host "|     - Updates extra\server-configs\ files based on detected hardware. |" -ForegroundColor Gray
+    Write-Host "|     - ZERO impact on live active services or system directories.     |" -ForegroundColor Gray
+    Write-Host "|                                                                      |" -ForegroundColor White
+    Write-Host "| [2] Manual / Custom Parameter Tuning (Review and Override)           |" -ForegroundColor Yellow
+    Write-Host "|     - Manually set InnoDB pool size, PHP memory, Apache threads.     |" -ForegroundColor Gray
+    Write-Host "|     - Choose whether to save to workspace files or inject to system. |" -ForegroundColor Gray
+    Write-Host "|                                                                      |" -ForegroundColor White
+    Write-Host "| [3] Full Live System Injection and Service Sync (Requires Admin)     |" -ForegroundColor Green
+    Write-Host "|     - Injects BOM-Free tuned directives into MySQL, PHP, and Apache. |" -ForegroundColor Gray
+    Write-Host "|     - Automatically creates backups and restarts active services.    |" -ForegroundColor Gray
+    Write-Host "|                                                                      |" -ForegroundColor White
+    Write-Host "| [4] Rollback to Previous Configuration Backups                       |" -ForegroundColor Magenta
+    Write-Host "|     - Restores original .bak / .backup_tuning configuration files.   |" -ForegroundColor Gray
+    Write-Host "|                                                                      |" -ForegroundColor White
+    Write-Host "| [5] Quick Live Services Health and Port Check                        |" -ForegroundColor Cyan
+    Write-Host "|                                                                      |" -ForegroundColor White
+    Write-Host "| [6] Exit (Do Nothing)                                                |" -ForegroundColor Red
+    Write-Host "+----------------------------------------------------------------------+" -ForegroundColor White
     Write-Host ""
     
     $choice = Read-Host " Enter choice [1-6]"
@@ -419,8 +421,8 @@ while ($running) {
             Write-Host "[ACTION 1] Calibrating Workspace Configuration Files..." -ForegroundColor Cyan
             $c = Apply-TuningParameters $params $repoMyIni $repoPhpIni $repoHttpd $false
             Write-Host ""
-            Write-Host "✔ Successfully calibrated $c workspace configuration templates!" -ForegroundColor Green
-            Write-Host "  Files updated in extra\server-configs\ with BOM-Free UTF-8 encoding." -ForegroundColor Gray
+            Write-Host "[OK] Successfully calibrated $c workspace configuration templates!" -ForegroundColor Green
+            Write-Host "     Files updated in extra\server-configs\ with BOM-Free UTF-8 encoding." -ForegroundColor Gray
             Write-Host ""
         }
 
@@ -465,14 +467,14 @@ while ($running) {
             
             if ($subChoice -eq "A" -or $subChoice -eq "a") {
                 $c = Apply-TuningParameters $activeParams $repoMyIni $repoPhpIni $repoHttpd $false
-                Write-Host "✔ Applied custom tuning to $c workspace files." -ForegroundColor Green
+                Write-Host "[OK] Applied custom tuning to $c workspace files." -ForegroundColor Green
             } elseif ($subChoice -eq "B" -or $subChoice -eq "b") {
                 if (-not $isAdmin) {
-                    Write-Host "✖ Administrative elevation required for live system injection." -ForegroundColor Red
+                    Write-Host "[ERROR] Administrative elevation required for live system injection." -ForegroundColor Red
                 } else {
                     $c = Apply-TuningParameters $activeParams $systemMyIni $systemPhpIni $systemHttpd $true
                     Sync-WindowsServices $customPool $customThreads
-                    Write-Host "✔ Injected custom parameters and synchronized services!" -ForegroundColor Green
+                    Write-Host "[OK] Injected custom parameters and synchronized services!" -ForegroundColor Green
                 }
             } else {
                 Write-Host "Cancelled custom parameter application." -ForegroundColor Gray
@@ -482,10 +484,10 @@ while ($running) {
 
         "3" {
             Write-Host ""
-            Write-Host "[ACTION 3] Full Enterprise System Injection & Service Sync" -ForegroundColor Green
+            Write-Host "[ACTION 3] Full Enterprise System Injection and Service Sync" -ForegroundColor Green
             if (-not $isAdmin) {
-                Write-Host "✖ Error: Live system injection requires Administrative privileges." -ForegroundColor Red
-                Write-Host "  Please launch Calibrate_Server_Hardware_Performance.bat as Administrator." -ForegroundColor Yellow
+                Write-Host "[ERROR] Live system injection requires Administrative privileges." -ForegroundColor Red
+                Write-Host "        Please launch Calibrate_Server_Hardware_Performance.bat as Administrator." -ForegroundColor Yellow
             } else {
                 Write-Host "Applying tuned directives to active system configurations..." -ForegroundColor Cyan
                 $allMyIni = $systemMyIni + $repoMyIni
@@ -493,18 +495,18 @@ while ($running) {
                 $allHttpd = $systemHttpd + $repoHttpd
 
                 $c = Apply-TuningParameters $params $allMyIni $allPhpIni $allHttpd $true
-                Write-Host "✔ Injected calibrated parameters into $c configuration files." -ForegroundColor Green
+                Write-Host "[OK] Injected calibrated parameters into $c configuration files." -ForegroundColor Green
                 
                 Sync-WindowsServices $params.innodb_buffer_pool_size $params.ThreadsPerChild
                 Write-Host ""
-                Write-Host "✔ Enterprise Calibration and Service Synchronization Complete!" -ForegroundColor Green
+                Write-Host "[OK] Enterprise Calibration and Service Synchronization Complete!" -ForegroundColor Green
             }
             Write-Host ""
         }
 
         "4" {
             if (-not $isAdmin) {
-                Write-Host "✖ Administrative privileges required to restore system backups." -ForegroundColor Red
+                Write-Host "[ERROR] Administrative privileges required to restore system backups." -ForegroundColor Red
             } else {
                 Restore-ConfigurationBackups
             }
@@ -521,8 +523,8 @@ while ($running) {
             $p3306 = Get-NetTCPConnection -LocalPort 3306 -State Listen -ErrorAction SilentlyContinue
             $p80 = Get-NetTCPConnection -LocalPort 80 -State Listen -ErrorAction SilentlyContinue
             
-            if ($p3306) { Write-Host "   ✔ Port 3306 (MySQL): LISTENING" -ForegroundColor Green } else { Write-Host "   ✖ Port 3306 (MySQL): NOT LISTENING" -ForegroundColor Red }
-            if ($p80) { Write-Host "   ✔ Port 80 (Apache):   LISTENING" -ForegroundColor Green } else { Write-Host "   ✖ Port 80 (Apache):   NOT LISTENING" -ForegroundColor Red }
+            if ($p3306) { Write-Host "   [OK] Port 3306 (MySQL): LISTENING" -ForegroundColor Green } else { Write-Host "   [FAIL] Port 3306 (MySQL): NOT LISTENING" -ForegroundColor Red }
+            if ($p80) { Write-Host "   [OK] Port 80 (Apache):   LISTENING" -ForegroundColor Green } else { Write-Host "   [FAIL] Port 80 (Apache):   NOT LISTENING" -ForegroundColor Red }
             Write-Host ""
         }
 
